@@ -1,0 +1,2 @@
+# The helper scripts use only the Python 3.10+ standard library.
+# assemble_fallback.py additionally needs ffmpeg and ffprobe on PATH.

@@ -1,0 +1,47 @@
+{
+  "skill_name": "vox-motion",
+  "evals": [
+    {
+      "id": 1,
+      "name": "No topic, hands-off default run",
+      "prompt": "Run the vox pipeline. Find something trending and make me a short.",
+      "expected_output": "Searches what is trending now and picks a topic with a why/how question, a surprising number and strong visual potential, with one runner-up. Researches it with two sources per number and keeps a Sources list. Uses the Mixed Media preset id, 9:16 with aspect_ratio passed on every clip, and N=6 blocks of about 20 to 24 words each. Runs script_check.py and prompt_lint.py. Posts one plan message with an estimated credit cost, then proceeds without waiting. Auto-picks a documentary narrator, checks every take is 9.0 to 10.5s, assembles automatically with anton subtitles, and delivers the MP4, the script and the Sources.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "YouTube landscape override",
+      "prompt": "Make a 2 minute Vox-style explainer for YouTube about why container shipping got so cheap.",
+      "expected_output": "Uses 16:9, so the preset key is not used. Generates a landscape style key with nano_banana_pro from the STYLE KEY prompt. N=12 blocks. The cold open states a surprising number flat, with numbers spelled out in the script. The block prompts use the labeled Mixed Media template with the fixed NEGATIVE line and no readable text. Assembly uses the clips' real width and height (1280x720). Offers youtube-seo afterwards without running it.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "name": "Cinematic geopolitics in the diorama style",
+      "prompt": "Make it cinematic and high-energy, like the AI bubble video: why do nuclear treaties keep expiring?",
+      "expected_output": "Picks the paper-diorama style and reuses the diorama style key and prop registry. Designs a through-line object and a question hook on a prop. Writes fake-oner seedance_2_0 prompts that open with the diorama STYLE tokens, with an impact every ~3s, a 'Sound design' line ending in 'No speech.', and the text fence 'No text anywhere except' around one letterpress label. Keeps named politicians out of the video prompts and follows seedance-prompting.md reference binding.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "name": "Moderation failure recovery",
+      "prompt": "Block 3 came back failed with no error text. Its prompt was a close-up of a named president's face and a mushroom cloud. Fix it.",
+      "expected_output": "Identifies this as moderation, not bad luck. Removes the name from the video prompt (names stay in the voiceover only). Routes the face-forward block to gemini_omni or drops it to a mid-shot with a censor bar. Replaces the mushroom cloud with another silhouette such as an hourglass. Re-runs only block 3, keeps the same style key, and updates run/manifest.json.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "Voice take timing",
+      "prompt": "Block 4's voice take is 13.2 seconds and block 2's is 6.8 seconds. Assemble anyway?",
+      "expected_output": "Does not assemble yet. Explains that the 13.2s take would be squeezed about 30% and sound rushed, and that the 6.8s take would start about 1.6s late and read as desync. Rewrites block 4 as one flowing sentence or raises speech_rate, and lengthens block 2 toward 20 to 24 words. Re-voices only those blocks, checks durationSec is 9.0 to 10.5s, then assembles.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "Assembler unavailable",
+      "prompt": "explainer_video is down. I have all 6 clips and voice takes downloaded. Give me the final video.",
+      "expected_output": "Fills run/manifest.json with the clip_file and voice_file paths in block order and runs scripts/assemble_fallback.py. Explains that it keeps the fixed 10s windows, centers short takes, speeds up overruns pitch-safely and keeps clip SFX under the voice, but cannot burn subtitles. Reports the output duration (N x 10s).",
+      "files": []
+    }
+  ]
+}
