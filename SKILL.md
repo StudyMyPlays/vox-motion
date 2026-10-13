@@ -1,5 +1,5 @@
 ---
-name: vox-motion-graphics
+name: vox-motion
 description: >
   Produce a complete narrated motion-graphics explainer video end-to-end with
   Higgsfield MCP: trend/topic research, fact-checked script, a locked style
@@ -13,10 +13,11 @@ description: >
   about something trending/viral", a video "like the AI bubble reference",
   or just "run the vox pipeline" — even when no topic is given (the skill
   finds a trending topic itself). Also use it for faceless narrated
-  shorts/YouTube videos on geopolitics, money, or power via Higgsfield.
+  shorts/YouTube videos on geopolitics, money, or power via Higgsfield. Not
+  for interactive web animation, live-action editing, or single stills.
 ---
 
-# Vox-Style Motion Graphics Explainer (Higgsfield MCP)
+# Vox Motion
 
 Turn one request — a topic, or nothing at all — into a finished Vox-style
 explainer video: bold editorial collage visuals, a documentary narrator, tight
@@ -30,14 +31,21 @@ motion-designed magazine spread, never a filmed scene.
 
 **Two house styles** — pick per brief, each with its own reference file:
 
-- **Mixed Media collage** (default; `references/vox-prompts.md`) — flat, bright,
-  playful-editorial; no text in clips, subtitles burned at assembly. Best for
-  data stories, "why X" explainers, shorts.
-- **Paper-diorama documentary** (`references/diorama-doc.md`) — cinematic sepia
-  newsprint dioramas, censor-bar cutout figures, one burnt-orange accent,
-  letterpress text ON props, fake-oner FPV camera. Best for geopolitics,
-  money, power, anything the user wants "cinematic" or high-energy. Comes
-  with a ready style key and a registry of reusable prop assets.
+- **Mixed Media collage** (default; [references/vox-prompts.md](references/vox-prompts.md))
+  — flat, bright, playful-editorial; no text in clips, subtitles burned at
+  assembly. Best for data stories, "why X" explainers, shorts.
+- **Paper-diorama documentary** ([references/diorama-doc.md](references/diorama-doc.md))
+  — cinematic sepia newsprint dioramas, censor-bar cutout figures, one
+  burnt-orange accent, letterpress text ON props, fake-oner FPV camera. Best
+  for geopolitics, money, power, anything the user wants "cinematic" or
+  high-energy. Comes with a ready style key and a registry of reusable prop
+  assets.
+
+Local helpers need only Python 3.10+ (and ffmpeg for the fallback assembler):
+
+```bash
+VOX_MOTION="<absolute directory containing this SKILL.md>"
+```
 
 ## Operating mode
 
@@ -63,7 +71,7 @@ gallery / voice picker if the user explicitly asks to choose.
 
 | Setting    | Default                                | Override when… |
 |------------|----------------------------------------|----------------|
-| Style      | Mixed Media preset, id `80e4dd7b-cd65-42d4-b191-b58d62558602` | user names another preset or supplies reference images |
+| Style      | Mixed Media preset, id `80e4dd7b-cd65-42d4-b191-b58d62558602` | user names another preset, asks for cinematic/diorama, or supplies reference images |
 | Aspect     | 9:16 vertical (shorts/TikTok/Reels) — pass `aspect_ratio: "9:16"` explicitly on every clip; the style key alone does NOT set framing (verified: `gemini_omni` defaults to 16:9 regardless of a vertical key) | user says YouTube/landscape → 16:9 |
 | Duration   | 1 minute → N = 6 blocks (N = minutes × 6, each block = one 10s clip) | user gives a length (1–10 min) |
 | Character  | Faceless (no mascot)                   | user asks for a host/mascot |
@@ -71,28 +79,15 @@ gallery / voice picker if the user explicitly asks to choose.
 | Voice      | Auto-pick a deep, measured documentary narrator from `list_voices` | user wants to choose → show the picker and wait |
 | Subtitles  | ON, font `anton` (bold condensed — fits the editorial look). Costs 0.05 credit per voiced block — mention it in the plan message. | user says no subtitles |
 
-## Story engine (what separates a banger from postcards)
+## Four sources of truth
 
-A sequence of pretty, disconnected scenes reads as a museum slideshow. What
-makes the reference-grade videos hit:
+Each fact lives in exactly one file under `run/`; everything else points to it:
 
-- **One through-line object.** A single physical metaphor travels through
-  EVERY block and escalates (a burning fuse crossing all scenes, a balloon
-  being pumped toward a needle). The viewer holds it the whole runtime; the
-  finale pays it off. Design this object before writing any block.
-- **A question hook, answered last.** Put the question ON a prop
-  ("WHO PAYS?", "WHO BLINKS?") in block 1 or the finale; the narration
-  withholds the answer until the kicker.
-- **Fake-oner.** Write every clip as one continuous FPV camera move that
-  begins and ends in full motion blur (dive, whip, flare, fall) — hard cuts
-  between blocks then read as one unbroken shot. Parallel generation, no
-  frame-matching needed.
-- **An impact every ~3 seconds** (slam, stamp, shockwave, snap) and at least
-  one speed ramp per block (slow-mo beat → whip). Alternate extreme macro
-  and wide diorama; whiplash the scale (giant face → ant-sized figures →
-  colossal prop).
-- **One reveal shot** the whole video is remembered by (crowd arranged into
-  a meaningful silhouette, a reveal only visible when the camera cranes up).
+1. `run/brief.md` — topic, angle, style, aspect, N, and the **Sources** list.
+2. `run/script.md` — the N narration blocks (`Block 1 …`), nothing else.
+3. `run/prompts.md` — the N block prompts plus any recurring subject profiles.
+4. `run/manifest.json` — style key, voice pair, and every job id per block
+   (shape: [assets/run-manifest.example.json](assets/run-manifest.example.json)).
 
 ## Pipeline
 
@@ -101,15 +96,13 @@ makes the reference-grade videos hit:
 | T Topic | use the given topic, or research what's trending and pick one | WebSearch / WebFetch |
 | R Research | gather verified facts, numbers, names; keep a Sources list | WebSearch / WebFetch |
 | 1 Style key | resolve the Mixed Media preset into a style-reference media_id (free) | `resolve_explainer_preset` (or `generate_image` for 16:9) |
-| 2 Script | N narration blocks, Vox formula, ~20–24 words each | reasoning (free) |
-| 3 Block prompts | N labeled video prompts in the Vox visual language | reasoning (free) — templates in `references/vox-prompts.md` |
-| 4 Clips | N × 10s clips, style key attached to every one | `generate_video` (`gemini_omni`) |
+| 2 Script | N narration blocks, Vox formula, ~20–24 words each | reasoning (free) + `script_check.py` |
+| 3 Block prompts | N labeled video prompts in the house visual language | reasoning (free) + `prompt_lint.py` |
+| 4 Clips | N × 10s clips, style key attached to every one | `generate_video` (`gemini_omni` / `seedance_2_0`) |
 | 5 Voice | one narrator, N takes, same voice_id on every block | `list_voices` + `generate_audio` (`seed_audio`) |
 | 6 Assemble | stitch clips + takes into one MP4, burn subtitles | `explainer_video` |
 
-Read `references/vox-prompts.md` before Phase 1 — it holds the style
-descriptor, the block-prompt template with worked examples, and the negative
-list. Phases T, R, 2, 3 are free; 1 (preset branch), 4, 5 cost credits.
+Phases T, R, 2, 3 are free; 1 (preset branch), 4, 5 cost credits.
 
 **Job model:** every `generate_*` call submits an async job and returns a job
 id. Poll with `job_status { jobId, sync: true }` where the server exposes it;
@@ -119,7 +112,9 @@ if not, check completion via the tool-result/notification stream or
 you rarely need the raw URLs. Use `get_cost: true` on one `generate_video`
 call before Phase 4 to estimate total spend for the plan message.
 
-## Phase T — Topic
+## Main flow
+
+### T. Topic
 
 **Topic given** → use it, go to Phase R.
 
@@ -138,68 +133,62 @@ call before Phase 4 to estimate total spend for the plan message.
 4. Pick the strongest candidate yourself and state it in the plan message
    (with one runner-up in case the user swaps).
 
-## Phase R — Research
+### R. Research
 
 Never script from memory. WebSearch the chosen topic, fetch the 2–3 best
 sources, and collect: the hook stat, 3–5 concrete facts/numbers/dates, the
 counterintuitive turn, and who/what/where specifics that make blocks vivid.
 Cross-check every number against a second source. Keep a short **Sources**
-list and include it in the final delivery message. No fabricated quotes, no
-invented numbers — a vague true line beats a specific false one.
+list in `run/brief.md` and include it in the final delivery message. No
+fabricated quotes, no invented numbers — a vague true line beats a specific
+false one.
 
-## Phase 1 — Style key
+### 1. Style key
 
-**Default (9:16):** call `resolve_explainer_preset` with preset id
-`80e4dd7b-cd65-42d4-b191-b58d62558602` (Mixed Media). The returned
-`media_id` IS the style key — attach it as `medias: [{ value: <media_id>,
-role: "image" }]` on **every** clip in Phase 4. This branch is free. The
-preset image is 9:16, and `gemini_omni` inherits framing from the key, so
-the video comes out vertical.
+**Mixed Media, 9:16 (default):** call `resolve_explainer_preset` with preset
+id `80e4dd7b-cd65-42d4-b191-b58d62558602`. The returned `media_id` IS the
+style key — attach it as `medias: [{ value: <media_id>, role: "image" }]` on
+**every** clip in Phase 4. This branch is free.
 
-**16:9 requested:** the preset key would force vertical framing, so instead
-generate your own landscape Vox-style key with `generate_image`, model
+**Mixed Media, 16:9:** the preset key would force vertical framing, so
+generate your own landscape key with `generate_image`, model
 `nano_banana_pro`, `aspect_ratio: "16:9"`, using the STYLE KEY prompt in
-`references/vox-prompts.md`. Poll to completion; that job id becomes the
-style key. (Costs one image generation.)
+[references/vox-prompts.md](references/vox-prompts.md). Poll to completion;
+that job id becomes the style key. (Costs one image generation.)
 
-## Phase 2 — Script (Vox formula)
+**Diorama:** reuse the ready key and prop registry in
+[references/diorama-doc.md](references/diorama-doc.md); regenerate only if
+the user asks.
 
-Write N blocks, labeled `Block 1 … Block N`, one per 10s clip. Each block is
-**~20–24 words** (~8–9s spoken; hard ceiling ≈9.5s — a slight overrun gets
-pitch-safe speed-up at assembly, a big one needs a shorter line). Plain
-spoken text only: no stage directions, no parentheticals, numbers spelled
-out ("seventy percent", "twenty twenty-four").
+### 2. Script
 
-Structure the N blocks like a Vox piece:
+Design the through-line object and question hook first, then write the N
+blocks with the Vox formula (cold open → stakes → evidence → turn → kicker).
+Rules, tone and word budget: [references/story-engine.md](references/story-engine.md).
+Start from [assets/script-template.md](assets/script-template.md), then:
 
-- **Block 1 — cold open.** The most surprising fact or question, stated
-  flat. No greeting, no "in this video".
-- **Block 2 — stakes.** Why this is weird or why it matters to the viewer.
-- **Middle blocks — evidence.** One idea per block, each anchored to a
-  concrete number, date, place, or comparison from Phase R. Escalate.
-- **Block N−1 — the turn.** The counterintuitive reveal, the "but here's
-  the thing".
-- **Block N — resolution + kicker.** Land the answer, end on a line that
-  reframes the opening fact.
+```bash
+python3 "$VOX_MOTION/scripts/script_check.py" run/script.md --blocks N
+```
 
-Tone: curious, precise, a little wry. Short declarative sentences. The
-narrator explains, never hypes.
+Fix every error before moving on; warnings are lines likely to land outside
+the 9.0–10.5s take window.
 
-## Phase 3 — Block prompts
+### 3. Block prompts
 
-Write N video prompts, one per block, each visually translating its
-narration line into the Vox collage language. Use the exact labeled template
-and the scene vocabulary in `references/vox-prompts.md`. Two rules that are
-easy to forget:
+One prompt per block, translating that block's line into the house style:
+Mixed Media → labeled template + collage style rules in
+[references/vox-prompts.md](references/vox-prompts.md); diorama → fake-oner
+shape in [references/diorama-doc.md](references/diorama-doc.md). For
+`seedance_2_0` prompts, also follow
+[references/seedance-prompting.md](references/seedance-prompting.md)
+(reference binding, sound-design brackets, checklist).
 
-- **No readable text anywhere in the clips.** AI-generated lettering
-  garbles; typography beats are expressed as abstract highlight bars,
-  redaction blocks, circles and underlines instead. Real captions are burned
-  server-side in Phase 6.
-- **No one speaks on screen.** The `AUDIO:` line is ambient/SFX/music only;
-  narration is added per block at assembly.
+```bash
+python3 "$VOX_MOTION/scripts/prompt_lint.py" run/prompts.md --style mixed   # or diorama
+```
 
-## Phase 4 — Clips
+### 4. Clips
 
 **Engine choice:**
 
@@ -221,6 +210,7 @@ generate_video
   prompt: <Block N video prompt>
   duration: 10
   resolution: "720p"
+  aspect_ratio: "9:16"        # or "16:9" — always explicit
   medias: [ { value: "<style key media_id or job id>", role: "image" } ]
 ```
 
@@ -231,47 +221,22 @@ first submission with a `preset_recommendation` notice (it pattern-matches
 collage prompts to its "3D RENDER" preset): decline it by resubmitting with
 `declined_preset_id` from the notice's `retry_literal_with` — never accept a
 photoreal/3D preset. Submit in batches, record every job id against its block
-number, re-submit only failed blocks. If a clip renders photoreal/live-action, strengthen the STYLE and
-NEGATIVE lines and re-run that block — two identical failures means the
-prompt is wrong, not the seed. If `gemini_omni` is rejected, confirm the
-current video model id with `models_explore(type: 'video')`; never silently
-switch to a photoreal model.
+number in `run/manifest.json`, re-submit only failed blocks. If a clip
+renders photoreal/live-action, strengthen the STYLE and NEGATIVE lines and
+re-run that block — two identical failures means the prompt is wrong, not
+the seed.
 
-## Phase 5 — Voiceover
+### 5. Voiceover
 
-1. Call `list_voices`. Auto-pick a **deep, measured, documentary** narrator
-   (calm authority, not ad-read energy); note its exact `voice_id` and
-   `voice_type`. Only show the picker and wait if the user asked to choose.
-2. One `generate_audio` call per block, same voice every time:
+Pick one documentary narrator with `list_voices`, voice every block with the
+same `voice_id`/`voice_type` via `generate_audio` (`seed_audio`), then
+**verify every take's real `durationSec` is 9.0–10.5s** before assembling.
+Call shape, pacing traps and fixes: [references/voiceover.md](references/voiceover.md).
 
-```
-generate_audio
-  model: "seed_audio"
-  voice_type: "<preset|element>"
-  voice_id: "<from list_voices>"
-  prompt: "<Block N line, plain text>"
-```
-
-Fitting knobs if a take runs long: `speech_rate` (-50..100) up a notch, or
-shorten the line and re-voice. Record each take's job id against its block.
-
-**Verify every take's real duration before assembling** — read `durationSec`
-from the completed job (`show_generations`) and target **9.0–10.5s** per
-take. The assembler centers short takes (a 7s take starts ~1.5s late — reads
-as desync) and speed-compresses long ones (a 13s take gets squeezed 30% —
-reads as rushed). TTS pacing is wildly unpredictable: narrator voices pause
-~0.7s at every period, so choppy name-heavy lines read ~1.8 words/s while
-one flowing comma-joined sentence reads ~2.5 words/s — the same word count
-can differ by 4+ seconds. Prefer single flowing sentences, expect 1–2
-re-voice rounds, keep the best take per block; a slight overrun beats a
-late start.
-
-## Phase 6 — Assemble (automatic, mandatory)
+### 6. Assemble (automatic, mandatory)
 
 The moment all clips and takes are done, assemble — in the same run, without
-being asked:
-
-Before assembling, read the finished clips' actual `width`/`height` from
+being asked. First read the finished clips' actual `width`/`height` from
 their job records and pass THOSE — if the clips rendered in a different
 aspect than planned, the assembly must match the clips, not the plan.
 
@@ -290,31 +255,19 @@ explainer_video
 Blocks are fixed 10s windows: short takes are centered, slight overruns are
 sped up pitch-safely, video is never stretched — total = N × 10s exact.
 Poll the returned job to completion, then present the final MP4 with
-`job_display`.
+`job_display`. If `explainer_video` is unavailable, use
+`scripts/assemble_fallback.py` (see [references/qa.md](references/qa.md)).
+
+## QA and failure handling
+
+Gates before paid generation, before assembly and before delivery, plus every
+known failure and its fix (off-style clips, long takes, moderation, preset
+interceptions, assembly rejects): [references/qa.md](references/qa.md).
 
 ## Delivery
 
 Final message: the video, the topic + angle in one sentence, the full script
-(so the user can reuse it), and the Sources list. Then offer — don't run
-unasked — the `youtube-seo` skill for titles/description/tags if the video
-is headed to YouTube.
-
-## Failure handling
-
-- Clip drifts off-style → re-attach the key, tighten STYLE/NEGATIVE, rerun
-  that block only.
-- Voice take > ~9.5s → shorten the line or raise `speech_rate`, re-voice
-  that block only.
-- `voice_id`/`voice_type` errors → you skipped `list_voices`; call it and
-  reuse one exact pair everywhere.
-- Assembly rejects an id → the job isn't terminal yet; poll it, then retry
-  assembly with all N items in order. Block N's audio always lands on clip N.
-- Video job status `failed` or `nsfw` with no error text → moderation, not
-  bad luck. Check the moderation map in `references/diorama-doc.md`: named
-  politicians and close-up recognizable faces fail on seedance (route those
-  blocks to gemini_omni or drop to mid-shot descriptions); "mushroom cloud"
-  and similar flag nsfw — swap the image, keep the idea.
-- User wants isolated deliverables (SFX-only track, single clips, stills):
-  raw clips have no voice — narration exists only in the assembly, so
-  extracting per-clip audio/frames locally (AVFoundation/ffmpeg) yields
-  clean voiceless assets.
+(so the user can reuse it), and the Sources list. Keep `run/` (brief, script,
+prompts, manifest) so any block can be re-generated later. Then offer — don't
+run unasked — the `youtube-seo` skill for titles/description/tags if the
+video is headed to YouTube.

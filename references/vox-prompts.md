@@ -63,6 +63,74 @@ hand-drawn marker annotations, snappy motion-graphics animation,
 non-photorealistic, no live-action
 ```
 
+## Collage style rules (tighten the look across every block)
+
+These rules are adapted from a public Vox-collage prompt pack (Sergio Gil,
+[x.com/seergioo_gil](https://x.com/seergioo_gil/status/2094082937402581220)).
+Only the platform-neutral style knowledge is kept here. Use them to make
+scene 9 still look like scene 1.
+
+**Persistent stage.** Don't describe N unrelated pictures. Describe one
+surface that every clip lives on: a muted archival paper or map texture
+field, evenly lit. Cutouts, stat shapes and pins enter and exit that same
+tabletop. Reuse the same stage sentence in every block's SCENE line, and
+change only what enters it.
+
+**Exact palette (optional archival variant).** When the brief wants the
+archival or newsroom look instead of the bright default, swap the colour
+fields for these swatches and keep them identical across all blocks:
+
+| Role | Swatch |
+|---|---|
+| Archival tan (stage) | `#C9BB9C` |
+| Ink black | `#1A1A1A` |
+| Halftone gray | `#8C8C8C` |
+| Hot red (single signal accent) | `#D62E1F` |
+| Mustard (secondary accent only) | `#D9A441` |
+
+Red is reserved for strokes, underlines, arrows, abstract counters and
+emphasis. Never let it spread onto backgrounds or onto several elements at
+once.
+
+**Composition.** Use one hero element carrying about 70% of the visual
+weight, plus at most 2–3 supporting elements, with generous negative space.
+Five or six cutouts in one frame is the most common way a block turns to
+mush.
+
+**Figure treatment.** Halftone black-and-white cutouts get a rough white
+keyline and an offset accent stroke behind them. Public figures and
+anonymous subjects can get a flat, slightly rough-edged black bar across
+the eyes, like a redacted ID photo. This also defuses likeness moderation
+(see `diorama-doc.md`).
+
+**Paper physics in the MOTION line.** Every move should feel like a real
+paper element handled by an invisible editor:
+
+- Cutouts spring up with slight overshoot and settle.
+- Map pins drop and wobble once.
+- Photo cards slide in with a paper shuffle.
+- Torn cards peel into frame.
+- Red underlines swipe left to right.
+- Red string draws itself between pins.
+
+Nothing fades in transparently, because paper doesn't fade. The camera
+treats the collage as a physical tabletop, not a 3D world: a slow ~2% drift,
+gentle micro-pushes and a simulated rack focus between paper layers. No
+spinning camera and no exaggerated parallax.
+
+**Keep stills and motion separate.** Motion words such as "slow push in"
+belong only in MOTION. If they leak into a STYLE KEY or prop image prompt,
+they bake fake blur into the still.
+
+**Prohibitions to add when clips come out glossy.** No glossy 3D, no lens
+flares, no gradients on cutouts, no neon, no glows, no particle effects, no
+AI-smooth finish. Demand print grain, halftone dots, torn edges and soft
+cutout drop shadows instead.
+
+**Text.** The Mixed Media rule above still wins: no readable text in clips.
+The pack's "one 1–4 word label on a paper strip or stamp" idea applies only
+to the diorama style, which already carries one letterpress label per scene.
+
 ## Block prompt template
 
 One per block, labeled, no timecodes:
@@ -95,7 +163,7 @@ fields, halftone and paper grain textures, hand-drawn marker annotations,
 snappy motion-graphics animation, non-photorealistic, no live-action.
 SCENE: A warm yellow paper background with halftone texture. Photo cutouts of
 apples, bread loaves and a full dinner plate snap into a neat grid, then one
-by one flip over and tumble downward off-frame into a torn-paper "bin" shape
+by one flip over and tumble downward off-frame into a torn-paper bin shape
 at the bottom. A thick black marker circle draws itself around the last
 remaining plate.
 MOTION: Cutouts pop in with slight overshoot in quick succession; slow camera

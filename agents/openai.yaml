@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vox Motion"
+  short_description: "Research, script, generate and assemble narrated Vox-style collage explainer videos"
+  default_prompt: "Use $vox-motion to make a narrated Vox-style explainer video."

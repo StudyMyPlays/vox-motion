@@ -1,0 +1,25 @@
+{
+  "topic": "Why food waste is a supply-chain story",
+  "angle": "Most food is lost before it reaches a kitchen, so logistics beats household guilt",
+  "style": "mixed",
+  "aspect_ratio": "9:16",
+  "blocks": 6,
+  "engine": "gemini_omni",
+  "style_key": "<media_id from resolve_explainer_preset or style-key job id>",
+  "prop_assets": [],
+  "voice": { "voice_id": "<from list_voices>", "voice_type": "preset" },
+  "subtitles": { "font": "anton" },
+  "items": [
+    { "block": 1, "clip_job": "<job id>", "voice_job": "<job id>", "voice_duration_sec": 9.6, "clip_file": "clips/block-01.mp4", "voice_file": "voice/block-01.mp3" },
+    { "block": 2, "clip_job": "<job id>", "voice_job": "<job id>", "voice_duration_sec": 9.2, "clip_file": "clips/block-02.mp4", "voice_file": "voice/block-02.mp3" },
+    { "block": 3, "clip_job": "<job id>", "voice_job": "<job id>", "voice_duration_sec": 10.1, "clip_file": "clips/block-03.mp4", "voice_file": "voice/block-03.mp3" },
+    { "block": 4, "clip_job": "<job id>", "voice_job": "<job id>", "voice_duration_sec": 9.8, "clip_file": "clips/block-04.mp4", "voice_file": "voice/block-04.mp3" },
+    { "block": 5, "clip_job": "<job id>", "voice_job": "<job id>", "voice_duration_sec": 9.4, "clip_file": "clips/block-05.mp4", "voice_file": "voice/block-05.mp3" },
+    { "block": 6, "clip_job": "<job id>", "voice_job": "<job id>", "voice_duration_sec": 10.3, "clip_file": "clips/block-06.mp4", "voice_file": "voice/block-06.mp3" }
+  ],
+  "final_job": null,
+  "sources": [
+    "<publisher — title — URL>",
+    "<second independent source for every number>"
+  ]
+}
